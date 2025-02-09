@@ -1,19 +1,22 @@
 use crate::objects::Objects;
 use std::{collections::HashMap, fmt::Debug, hash::Hash};
 
-/// `NyanTermObjs` manages a map of objects, with the object ID (of type `P`) as the key and the objects (of type `Objects`) as the value.
-/// It provides methods to add and draw objects.
-pub struct NyanTermObjs<'a, P>
+/// A struct representing a collection of objects identified by a unique ID of type `P`.
+///
+/// `P` is expected to be convertible into a `String`, and each object in the collection is represented by `Objects<'a>`.
+/// `Objects` is an enum that represents various types of objects, such as text, air, or block.
+pub struct NyanObj<'a, P = String>
 where
-    P: Into<String>,
+    P: AsRef<str> + Clone, // Added Clone to allow duplicating IDs
 {
-    /// A hashmap that stores objects, with the object ID (`P`) as the key and the object (`Objects`) as the value
-    objects: HashMap<P, Objects<'a>>, // ID(P) → Objects is managed by ID
+    /// A hashmap that stores objects, with the object ID (`P`) as the key and the object (`Objects<'a>`) as the value.
+    /// The ID (`P`) is used to uniquely identify each object in the collection.
+    objects: HashMap<P, Objects<'a>>,
 }
 
-impl<'a, P> NyanTermObjs<'a, P>
+impl<'a, P> NyanObj<'a, P>
 where
-    P: Into<String> + Eq + Hash + Debug,
+    P: AsRef<str> + Eq + Hash + Debug + Clone,
 {
     /// Creates a new `NyanTermObjs` instance with an empty object map.
     ///
@@ -39,7 +42,10 @@ where
     ///
     /// # Arguments
     /// - `id`: The ID of the object to draw.
-    pub fn draw_object(&self, id: P) {
+    ///
+    /// # Returns
+    /// - `Result<(), String>`: Ok if successful, or an error message if the object is not found.
+    pub fn draw_object(&self, id: P) -> Result<(), String> {
         if let Some(object) = self.objects.get(&id) {
             match object {
                 // Draws a Text object
@@ -55,9 +61,10 @@ where
                     todo!()
                 }
             }
+            Ok(())
         } else {
-            // Prints an error message if the object is not found
-            panic!("Object with ID {:?} not found!", id);
+            // Returns an error message if the object is not found
+            Err(format!("Object with ID {:?} not found!", id))
         }
     }
 }

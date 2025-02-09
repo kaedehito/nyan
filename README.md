@@ -31,14 +31,14 @@ nyan = { git = "https://github.com/kaedehito/nyan" }
 Here's a simple example of how to use nyan:
 
 ```rust
-use nyan::{init::App, nyanterm::NyanTermObjs, objects::Objects};
+use nyan::{app::App, nyanobj::NyanObj, objects::Objects};
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Initialize the application (with 10 FPS)
     let nyan = App::new(10).clear().alternate_screen();
     
-    let mut obj = NyanTermObjs::new();
+    let mut obj = NyanObjs::new();
     
     // Create and add objects to the application
     obj.add_object("text", Objects::Text("Hello world!"));
