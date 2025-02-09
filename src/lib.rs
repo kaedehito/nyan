@@ -4,11 +4,11 @@ pub mod objects;
 
 #[cfg(test)]
 mod tests {
-    use crate::{init::NyanTerminal, nyanterm::NyanTermObjs, objects::Objects};
+    use crate::{init::App, nyanterm::NyanTermObjs, objects::Objects};
 
     #[test]
     fn test() {
-        let nyan = NyanTerminal::new(10).clear().alternate_screen();
+        let nyan = App::new(10).clear().alternate_screen();
 
         let mut obj: NyanTermObjs<String> = NyanTermObjs::new();
 

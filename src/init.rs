@@ -6,7 +6,7 @@ use std::{fmt::Debug, io, thread, time::Duration};
 /// `NyanTerminal` is a struct that handles terminal control and drawing.
 /// It supports functionalities like enabling alternate screens, clearing the terminal,
 /// enabling raw mode, and controlling the cursor visibility and FPS.
-pub struct NyanTerminal {
+pub struct App {
     stdout: io::Stdout,
     alternatescreen: bool,
     clear: bool,
@@ -15,7 +15,7 @@ pub struct NyanTerminal {
     fps: u64,
 }
 
-impl Debug for NyanTerminal {
+impl Debug for App {
     /// Provides a custom debug implementation for `NyanTerminal`, showing its current settings.
     fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         fmt.debug_struct("NyanTerminal")
@@ -26,7 +26,7 @@ impl Debug for NyanTerminal {
     }
 }
 
-impl io::Write for NyanTerminal {
+impl io::Write for App {
     /// Writes bytes to the terminal output.
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.stdout.write(buf)
@@ -38,7 +38,7 @@ impl io::Write for NyanTerminal {
     }
 }
 
-impl NyanTerminal {
+impl App {
     /// Creates a new `NyanTerminal` instance with the specified frames per second (FPS).
     /// The FPS must be at least 1, as 0 would cause an error.
     ///
