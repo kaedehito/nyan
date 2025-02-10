@@ -31,26 +31,51 @@ nyan = { git = "https://github.com/kaedehito/nyan" }
 Here's a simple example of how to use nyan:
 
 ```rust
-use nyan::{app::App, nyanobj::NyanObj, objects::Objects};
+use nyan::{app::App, nyanobj::NyanObj, objects::Objects, input::{NyanInput, NyanInputKey}};
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // Initialize the application (with 10 FPS)
-    let nyan = App::new(10).clear().alternate_screen();
-    
-    let mut obj = NyanObjs::new();
-    
-    // Create and add objects to the application
+    // Initialize the application
+    // In this case, it sets 10 FPS, clears the screen, enables raw mode, and switches to alternate screen mode
+    let mut nyan = App::new(10)
+        .clear()       // Clears the screen
+        .raw_mode()    // Enables raw mode (receives key inputs as is)
+        .alternate_screen(); // Enables alternate screen mode (uses a screen different from the default terminal screen)
+
+    // Create a new NyanObj object
+    let mut obj = NyanObj::new();
+   
+    // Add an object with the key "text" and assign it a text object
+    // Here, we are creating an object to display the text "Hello world!"
     obj.add_object("text", Objects::Text("Hello world!"));
-    
-    // Run the main event loop
+
+    // Start the main event loop
     loop {
-        // Draw the object
+        // Draw the object on the screen
         nyan.draw(|| {
-            obj.draw_object("text"); // will display "Hello world!"
+            // Draw the object with the key "text"
+            obj.draw_object("text"); // Displays "Hello world!" on the screen
         })?;
+
+        // Get user input
+        let key = NyanInput::get_input();
+
+        // Handle the key input
+        match key? {
+            // If Ctrl + C is pressed, exit the loop and terminate the application
+            NyanInput::Ctrl(NyanInputKey::C) => {
+                break; // Exit the loop and terminate the app
+            }
+
+            // Do nothing for other key inputs
+            _ => {}
+        }
     }
+
+    // Exit the application
+    nyan.exit()?;
     
+    // Return Ok to indicate normal termination
     Ok(())
 }
 
