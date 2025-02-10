@@ -1,14 +1,22 @@
 pub mod app;
+pub mod cursor;
+pub mod input;
 pub mod nyanobj;
 pub mod objects;
 
 #[cfg(test)]
 mod tests {
-    use crate::{app::App, nyanobj::NyanObj, objects::Objects};
+    use crate::{
+        app::App,
+        cursor::{self, Cursor},
+        input::{NyanInput, NyanInputKey},
+        nyanobj::NyanObj,
+        objects::Objects,
+    };
 
     #[test]
     fn test() {
-        let nyan = App::new(10).clear().alternate_screen();
+        let mut nyan = App::new(60).clear().raw_mode().alternate_screen();
 
         let mut obj = NyanObj::new();
 
@@ -19,9 +27,24 @@ mod tests {
         loop {
             nyan.draw(|| {
                 obj.draw_object("hello_world").unwrap();
+                cursor::Cursor::move_cursor(Cursor::Move(0, 1)).unwrap();
                 obj.draw_object("Test_NyanTerm_dbg").unwrap();
             })
             .unwrap();
+
+            let p = NyanInput::get_input();
+            match p.unwrap() {
+                NyanInput::Ctrl(NyanInputKey::C) => {
+                    break;
+                }
+
+                NyanInput::Key(NyanInputKey::A) => {
+                    obj.update_object("hello_world", Objects::Text("You Plessed \"A\"!"));
+                }
+                _ => {}
+            }
         }
+
+        nyan.exit().unwrap();
     }
 }

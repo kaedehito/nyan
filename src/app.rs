@@ -13,6 +13,7 @@ pub struct App {
     rawmode: bool,
     cursor: bool,
     fps: u64,
+    looped: bool,
 }
 
 impl Debug for App {
@@ -55,6 +56,7 @@ impl App {
             rawmode: false,
             cursor: false,
             fps: fps.max(1), // Prevents FPS from being 0
+            looped: false,
         }
     }
 
@@ -90,6 +92,8 @@ impl App {
 
     /// Hides or shows the cursor based on the flag.
     ///
+    /// If true, the cursor will visible
+    ///
     /// # Returns
     /// A new `NyanTerminal` instance with the cursor visibility set.
     pub fn cursor(self) -> Self {
@@ -116,15 +120,15 @@ impl App {
     ///
     /// # Returns
     /// A `Result` indicating success or failure of the operation.
-    pub fn draw<F: FnOnce()>(&self, func: F) -> Result<()> {
+    pub fn draw<F: FnOnce()>(&mut self, func: F) -> Result<()> {
         execute!(&self.stdout, cursor::MoveTo(0, 0))?;
-
-        if self.rawmode {
-            terminal::enable_raw_mode()?;
-        }
 
         if self.alternatescreen {
             execute!(&self.stdout, terminal::EnterAlternateScreen)?;
+        }
+
+        if self.rawmode && !self.looped {
+            terminal::enable_raw_mode()?;
         }
 
         if !self.cursor {
@@ -136,6 +140,8 @@ impl App {
         if self.clear {
             execute!(&self.stdout, terminal::Clear(terminal::ClearType::All))?
         }
+
+        self.looped = true;
 
         func();
 
@@ -151,7 +157,12 @@ impl App {
     /// # Returns
     /// A `Result` indicating success or failure of the operation.
     pub fn exit(self) -> Result<()> {
-        execute!(&self.stdout, cursor::Show, terminal::LeaveAlternateScreen)?;
+        execute!(
+            &self.stdout,
+            cursor::MoveTo(0, 0),
+            cursor::Show,
+            terminal::LeaveAlternateScreen
+        )?;
 
         if self.rawmode {
             terminal::disable_raw_mode()?;

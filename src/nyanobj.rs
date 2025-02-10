@@ -37,6 +37,15 @@ where
         self.objects.insert(id, object);
     }
 
+    pub fn remove_object(&mut self, id: P) {
+        self.objects.remove(&id);
+    }
+
+    pub fn update_object(&mut self, id: P, object: Objects<'a>) {
+        self.objects.remove(&id);
+        self.objects.insert(id, object);
+    }
+
     /// Draws the object associated with the given ID.
     /// If the object is not found, an error message is printed.
     ///

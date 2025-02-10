@@ -1,7 +1,10 @@
 [package]
 name = "nyan"
 version = "0.1.0"
+description = "A Rust library for creating dynamic Terminal User Interfaces (TUI)"
+license = "MIT"
 edition = "2021"
+repository = "https://github.com/kaedehito/nyan"
 
 [dependencies]
 anyhow = "1.0.95"
