@@ -1,3 +1,22 @@
+//! This module provides the `App` struct, which manages terminal control and rendering functionalities.
+//!
+//! The `App` struct supports features like enabling alternate screens, clearing the terminal, enabling raw mode, controlling the cursor visibility, and managing the frames per second (FPS) for terminal updates.
+//!
+//! # Structs
+//!
+//! - `App`: A struct that controls various terminal settings and allows drawing content to the terminal with the specified configurations.
+//!
+//! # Methods
+//!
+//! - `new(fps: u64)`: Creates a new `App` instance with a specified frames per second (FPS) value. The FPS cannot be 0, as it will default to 1.
+//! - `alternate_screen()`: Enables the alternate screen (similar to full-screen mode) for the terminal.
+//! - `clear()`: Enables the feature to clear the terminal screen on each frame.
+//! - `raw_mode()`: Enables raw mode, which disables input buffering and line editing.
+//! - `cursor()`: Controls the visibility of the terminal cursor.
+//! - `fps(fps: u64)`: Sets the frames per second for terminal updates.
+//! - `draw(func: F)`: Executes the drawing function (`func`), managing terminal settings like alternate screen, raw mode, cursor visibility, clearing the screen, and enforcing the FPS.
+//! - `exit()`: Exits the terminal drawing mode, restoring the original screen and cursor visibility.
+
 use anyhow::Result;
 use crossterm::{cursor, execute, terminal};
 

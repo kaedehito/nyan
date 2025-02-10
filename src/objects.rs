@@ -1,3 +1,18 @@
+//! This module defines the `Objects` enum, which represents different types of objects that can be used in the terminal display.
+//!
+//! The `Objects` enum can represent a `Block`, an `Air`, or a `Text` object containing a string slice (`&'a str`). These objects can be displayed or manipulated within the terminal context.
+//!
+//! # Enum
+//!
+//! - `Objects`: Represents various types of objects. It includes the following variants:
+//!     - `Block`: A block object (potentially used for drawing a visual element).
+//!     - `Air`: An air object, representing an empty or invisible entity.
+//!     - `Text`: A text object, containing a string slice (`&'a str`), used for displaying text in the terminal.
+//!
+//! # Methods
+//!
+//! - `Debug`: Provides a custom debug implementation for the `Objects` enum. It formats the enum variants in a human-readable way, displaying the respective type and data (if applicable).
+
 use std::fmt::Debug;
 
 #[derive(PartialEq, Eq, Hash)]

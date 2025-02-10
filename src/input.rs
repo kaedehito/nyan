@@ -1,3 +1,20 @@
+//! This module defines types and functions for handling keyboard inputs in the Nyan application.
+//!
+//! The `NyanInputKey` enum represents individual keyboard keys, including alphabetic keys and unrecognized keys. It also includes a variant for undefined keys (`NoKeys(char)`).
+//!
+//! The `NyanInput` enum represents various types of keyboard inputs, including key presses with modifier keys such as Shift, Ctrl, and Alt. It also defines special keys like Enter, Backspace, Arrow keys, and Function keys. Additionally, it can handle key presses for regular and invalid keys.
+//!
+//! This module includes the `get_input` function, which asynchronously retrieves keyboard input by polling for events and returning a corresponding `NyanInput` enum value. It supports detecting key presses with different modifiers (Shift, Ctrl, Alt), as well as special and function keys.
+//!
+//! # Enums
+//!
+//! - `NyanInputKey`: Represents individual keyboard keys, including alphabetic keys (A-Z) and undefined keys.
+//! - `NyanInput`: Represents various types of keyboard inputs, including keys with modifiers, special keys, function keys, and regular key presses.
+//!
+//! # Methods
+//!
+//! - `get_input`: Asynchronously retrieves the keyboard input. It waits for 16 milliseconds using `poll` and returns a `NyanInput` value representing the key pressed.
+
 use std::{fmt::Debug, time::Duration};
 
 use crossterm::event::{self, KeyCode, KeyModifiers};
@@ -34,7 +51,7 @@ pub enum NyanInputKey {
     X,
     Y,
     Z,
-    NoKeys(char),
+    OtherKey(char),
 }
 
 impl Debug for NyanInputKey {
@@ -66,7 +83,7 @@ impl Debug for NyanInputKey {
             Self::X => write!(f, "NyanInputKey::X"),
             Self::Y => write!(f, "NyanInputKey::Y"),
             Self::Z => write!(f, "NyanInputKey::Z"),
-            Self::NoKeys(c) => write!(f, "NyanInputKey::({})", c),
+            Self::OtherKey(c) => write!(f, "NyanInputKey::({})", c),
         }
     }
 }
@@ -177,7 +194,7 @@ impl<'a> NyanInput<'a> {
                             'x' => NyanInputKey::X,
                             'y' => NyanInputKey::Y,
                             'z' => NyanInputKey::Z,
-                            _ => return Ok(Self::UpAllow),
+                            p => NyanInputKey::OtherKey(p),
                         };
                         if key.modifiers.contains(KeyModifiers::CONTROL) {
                             Self::Ctrl(nyan_key)

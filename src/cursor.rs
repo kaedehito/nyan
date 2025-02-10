@@ -1,3 +1,15 @@
+//! This module defines the `Cursor` enum and provides functions for controlling cursor movement in the terminal.
+//!
+//! The `Cursor` enum currently supports moving the cursor to a specified `(x, y)` position. This can be used for precise control over where content is drawn in the terminal.
+//!
+//! # Enum
+//!
+//! - `Cursor`: Represents cursor movement operations. It includes a variant `Move(u16, u16)` for moving the cursor to specific coordinates `(x, y)`.
+//!
+//! # Methods
+//!
+//! - `move_cursor(moveto: Cursor)`: Moves the cursor to the specified position. The position is defined by the `Cursor::Move(x, y)` variant. This method returns a result indicating success or failure.
+
 use crossterm::execute;
 use std::fmt::Debug;
 
