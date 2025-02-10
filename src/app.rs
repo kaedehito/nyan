@@ -38,10 +38,15 @@ pub struct App {
 impl Debug for App {
     /// Provides a custom debug implementation for `NyanTerminal`, showing its current settings.
     fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut cursor_state = "Show";
+        if self.cursor {
+            cursor_state = "Hide";
+        }
         fmt.debug_struct("NyanTerminal")
             .field("alternate_screen", &self.alternatescreen)
             .field("clear", &self.clear)
             .field("raw_mode", &self.rawmode)
+            .field("cursor", &cursor_state)
             .finish()
     }
 }
@@ -109,13 +114,13 @@ impl App {
         nyan
     }
 
-    /// Hides or shows the cursor based on the flag.
+    /// Hides the cursor.
     ///
-    /// If true, the cursor will visible
+    /// This method hides the cursor, regardless of the provided flag.
     ///
     /// # Returns
-    /// A new `NyanTerminal` instance with the cursor visibility set.
-    pub fn cursor(self) -> Self {
+    /// A new `NyanTerminal` instance with the cursor hidden.
+    pub fn hide_cursor(self) -> Self {
         let mut nyan = self;
         nyan.cursor = true;
         nyan
@@ -131,6 +136,34 @@ impl App {
         nyan
     }
 
+    /// Retrieves the current size of the terminal window.
+    ///
+    /// This function uses `crossterm` to get the terminal's width and height
+    /// in character cells.
+    ///
+    /// # Returns
+    /// - `Ok((u16, u16))`: A tuple containing the terminal's width and height.
+    /// - `Err(anyhow::Error)`: If retrieving the terminal size fails.
+    ///
+    /// # Example
+    /// ```
+    /// use nyan::app::App;
+    /// use std::error::Error;
+    ///
+    /// fn main() -> Result<(), Box<dyn Error>>{
+    ///     let (width, height) = App::get_terminal_size()?;
+    ///     println!("Terminal size: {}x{}", width, height);
+    ///     Ok(())
+    /// }
+    /// ```
+    ///
+    /// # Errors
+    /// This function will return an error if the terminal size cannot be determined.
+    pub fn get_terminal_size() -> anyhow::Result<(u16, u16)> {
+        let (x, y) = crossterm::terminal::size()?;
+        Ok((x, y))
+    }
+
     /// Executes a function to draw the terminal content, handling setup and cleanup for terminal settings.
     /// It can manage alternate screens, raw mode, cursor visibility, clearing the terminal, and FPS control.
     ///
@@ -142,7 +175,7 @@ impl App {
     pub fn draw<F: FnOnce()>(&mut self, func: F) -> Result<()> {
         execute!(&self.stdout, cursor::MoveTo(0, 0))?;
 
-        if self.alternatescreen {
+        if self.alternatescreen && !self.looped {
             execute!(&self.stdout, terminal::EnterAlternateScreen)?;
         }
 

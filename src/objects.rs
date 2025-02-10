@@ -17,8 +17,8 @@ use std::fmt::Debug;
 
 #[derive(PartialEq, Eq, Hash)]
 /// The `Objects` enum represents different types of objects.
-/// It can be a `Block`, `Air`, or a `Text` object containing a string slice (`&'a str`).
-pub enum Objects<'a> {
+/// It can be a `Block`, `Air`, or a `Text` object containing a `AsRef<str>`.
+pub enum Objects<T: AsRef<str> = String> {
     /// Represents a block object.
     Block,
 
@@ -26,10 +26,10 @@ pub enum Objects<'a> {
     Air,
 
     /// Represents a text object that contains a string.
-    Text(&'a str),
+    Text(T),
 }
 
-impl<'a> Debug for Objects<'a> {
+impl<T: AsRef<str>> Debug for Objects<T> {
     /// Provides a custom debug implementation for `Objects`, printing a string representation of each variant.
     fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
@@ -45,7 +45,7 @@ impl<'a> Debug for Objects<'a> {
 
             // Formats the Text variant, displaying the contained text
             Objects::Text(t) => {
-                write!(fmt, "Objects::Text({})", t)
+                write!(fmt, "Objects::Text({})", t.as_ref())
             }
         }
     }
