@@ -9,6 +9,6 @@ pub enum NyanError<'a> {
     #[error("Failed to move cursor: {0}")]
     Cursor(Cow<'a, str>),
 
-    #[error("Object with ID {0} not found!")]
+    #[error("Object with ID \"{0}\" is not found")]
     ObjectNotFound(Cow<'a, str>),
 }

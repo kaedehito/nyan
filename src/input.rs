@@ -1,6 +1,6 @@
 //! This module defines types and functions for handling keyboard inputs in the Nyan application.
 //!
-//! The `NyanInputKey` enum represents individual keyboard keys, including alphabetic keys and unrecognized keys. It also includes a variant for undefined keys (`NoKeys(char)`).
+//! The `NyanKey` enum represents individual keyboard keys, including alphabetic keys and unrecognized keys. It also includes a variant for undefined keys (`NoKeys(char)`).
 //!
 //! The `NyanInput` enum represents various types of keyboard inputs, including key presses with modifier keys such as Shift, Ctrl, and Alt. It also defines special keys like Enter, Backspace, Arrow keys, and Function keys. Additionally, it can handle key presses for regular and invalid keys.
 //!
@@ -8,7 +8,7 @@
 //!
 //! # Enums
 //!
-//! - `NyanInputKey`: Represents individual keyboard keys, including alphabetic keys (A-Z) and undefined keys.
+//! - `NyanKey`: Represents individual keyboard keys, including alphabetic keys (A-Z) and undefined keys.
 //! - `NyanInput`: Represents various types of keyboard inputs, including keys with modifiers, special keys, function keys, and regular key presses.
 //!
 //! # Methods
@@ -19,12 +19,12 @@ use std::{fmt::Debug, time::Duration};
 
 use crossterm::event::{self, KeyCode, KeyModifiers};
 
-/// `NyanInputKey` represents individual keyboard keys.
+/// `NyanKey` represents individual keyboard keys.
 ///
 /// It includes alphabet keys (`A-Z`) and unrecognized keys (`NoKeys(char)`).
 #[allow(unused)]
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub enum NyanInputKey {
+pub enum NyanKey {
     A,
     B,
     C,
@@ -54,36 +54,36 @@ pub enum NyanInputKey {
     OtherKey(char),
 }
 
-impl Debug for NyanInputKey {
+impl Debug for NyanKey {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::A => write!(f, "NyanInputKey::A"),
-            Self::B => write!(f, "NyanInputKey::B"),
-            Self::C => write!(f, "NyanInputKey::C"),
-            Self::D => write!(f, "NyanInputKey::D"),
-            Self::E => write!(f, "NyanInputKey::E"),
-            Self::F => write!(f, "NyanInputKey::F"),
-            Self::G => write!(f, "NyanInputKey::G"),
-            Self::H => write!(f, "NyanInputKey::H"),
-            Self::I => write!(f, "NyanInputKey::I"),
-            Self::J => write!(f, "NyanInputKey::J"),
-            Self::K => write!(f, "NyanInputKey::K"),
-            Self::L => write!(f, "NyanInputKey::L"),
-            Self::M => write!(f, "NyanInputKey::M"),
-            Self::N => write!(f, "NyanInputKey::N"),
-            Self::O => write!(f, "NyanInputKey::O"),
-            Self::P => write!(f, "NyanInputKey::P"),
-            Self::Q => write!(f, "NyanInputKey::Q"),
-            Self::R => write!(f, "NyanInputKey::R"),
-            Self::S => write!(f, "NyanInputKey::S"),
-            Self::T => write!(f, "NyanInputKey::T"),
-            Self::U => write!(f, "NyanInputKey::U"),
-            Self::V => write!(f, "NyanInputKey::V"),
-            Self::W => write!(f, "NyanInputKey::W"),
-            Self::X => write!(f, "NyanInputKey::X"),
-            Self::Y => write!(f, "NyanInputKey::Y"),
-            Self::Z => write!(f, "NyanInputKey::Z"),
-            Self::OtherKey(c) => write!(f, "NyanInputKey::({})", c),
+            Self::A => write!(f, "NyanKey::A"),
+            Self::B => write!(f, "NyanKey::B"),
+            Self::C => write!(f, "NyanKey::C"),
+            Self::D => write!(f, "NyanKey::D"),
+            Self::E => write!(f, "NyanKey::E"),
+            Self::F => write!(f, "NyanKey::F"),
+            Self::G => write!(f, "NyanKey::G"),
+            Self::H => write!(f, "NyanKey::H"),
+            Self::I => write!(f, "NyanKey::I"),
+            Self::J => write!(f, "NyanKey::J"),
+            Self::K => write!(f, "NyanKey::K"),
+            Self::L => write!(f, "NyanKey::L"),
+            Self::M => write!(f, "NyanKey::M"),
+            Self::N => write!(f, "NyanKey::N"),
+            Self::O => write!(f, "NyanKey::O"),
+            Self::P => write!(f, "NyanKey::P"),
+            Self::Q => write!(f, "NyanKey::Q"),
+            Self::R => write!(f, "NyanKey::R"),
+            Self::S => write!(f, "NyanKey::S"),
+            Self::T => write!(f, "NyanKey::T"),
+            Self::U => write!(f, "NyanKey::U"),
+            Self::V => write!(f, "NyanKey::V"),
+            Self::W => write!(f, "NyanKey::W"),
+            Self::X => write!(f, "NyanKey::X"),
+            Self::Y => write!(f, "NyanKey::Y"),
+            Self::Z => write!(f, "NyanKey::Z"),
+            Self::OtherKey(c) => write!(f, "NyanKey::({})", c),
         }
     }
 }
@@ -97,9 +97,9 @@ pub enum NyanInput<'a> {
     /// Input with Shift modifier
     Shift(&'a NyanInput<'a>),
     /// Input with Ctrl modifier
-    Ctrl(NyanInputKey),
+    Ctrl(NyanKey),
     /// Input with Alt modifier
-    Alt(NyanInputKey),
+    Alt(NyanKey),
     /// Arrow keys
     UpAllow,
     DownAllow,
@@ -120,7 +120,7 @@ pub enum NyanInput<'a> {
     /// Function keys
     FunctionKey(u8),
     /// Regular key
-    Key(NyanInputKey),
+    Key(NyanKey),
     /// Invalid key input
     Null,
 }
@@ -168,33 +168,33 @@ impl<'a> NyanInput<'a> {
                 let nyan_input = match key.code {
                     KeyCode::Char(ch) => {
                         let nyan_key = match ch.to_ascii_lowercase() {
-                            'a' => NyanInputKey::A,
-                            'b' => NyanInputKey::B,
-                            'c' => NyanInputKey::C,
-                            'd' => NyanInputKey::D,
-                            'e' => NyanInputKey::E,
-                            'f' => NyanInputKey::F,
-                            'g' => NyanInputKey::G,
-                            'h' => NyanInputKey::H,
-                            'i' => NyanInputKey::I,
-                            'j' => NyanInputKey::J,
-                            'k' => NyanInputKey::K,
-                            'l' => NyanInputKey::L,
-                            'm' => NyanInputKey::M,
-                            'n' => NyanInputKey::N,
-                            'o' => NyanInputKey::O,
-                            'p' => NyanInputKey::P,
-                            'q' => NyanInputKey::Q,
-                            'r' => NyanInputKey::R,
-                            's' => NyanInputKey::S,
-                            't' => NyanInputKey::T,
-                            'u' => NyanInputKey::U,
-                            'v' => NyanInputKey::V,
-                            'w' => NyanInputKey::W,
-                            'x' => NyanInputKey::X,
-                            'y' => NyanInputKey::Y,
-                            'z' => NyanInputKey::Z,
-                            p => NyanInputKey::OtherKey(p),
+                            'a' => NyanKey::A,
+                            'b' => NyanKey::B,
+                            'c' => NyanKey::C,
+                            'd' => NyanKey::D,
+                            'e' => NyanKey::E,
+                            'f' => NyanKey::F,
+                            'g' => NyanKey::G,
+                            'h' => NyanKey::H,
+                            'i' => NyanKey::I,
+                            'j' => NyanKey::J,
+                            'k' => NyanKey::K,
+                            'l' => NyanKey::L,
+                            'm' => NyanKey::M,
+                            'n' => NyanKey::N,
+                            'o' => NyanKey::O,
+                            'p' => NyanKey::P,
+                            'q' => NyanKey::Q,
+                            'r' => NyanKey::R,
+                            's' => NyanKey::S,
+                            't' => NyanKey::T,
+                            'u' => NyanKey::U,
+                            'v' => NyanKey::V,
+                            'w' => NyanKey::W,
+                            'x' => NyanKey::X,
+                            'y' => NyanKey::Y,
+                            'z' => NyanKey::Z,
+                            p => NyanKey::OtherKey(p),
                         };
                         if key.modifiers.contains(KeyModifiers::CONTROL) {
                             Self::Ctrl(nyan_key)
