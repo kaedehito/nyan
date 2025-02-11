@@ -31,7 +31,7 @@ nyan = { git = "https://github.com/kaedehito/nyan" }
 Here's a simple example of how to use nyan:
 
 ```rust
-use nyan::{app::App, nyanobj::NyanObj, objects::Objects, input::{NyanInput, NyanInputKey}};
+use nyan::{app::App, nyan_obj::NyanObj, objects::Objects, input::{NyanInput, NyanKey}};
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -47,14 +47,14 @@ fn main() -> Result<(), Box<dyn Error>> {
    
     // Add an object with the key "text" and assign it a text object
     // Here, we are creating an object to display the text "Hello world!"
-    obj.add_object("text", Objects::new_text("Hello world!"));
+    obj.add_object("text", Objects::new_text("Hello world!"), (0, 0));
 
     // Start the main event loop
     loop {
         // Draw the object on the screen
         nyan.draw(|| {
             // Draw the object with the key "text"
-            obj.draw_object("text"); // Displays "Hello world!" on the screen
+            obj.draw_object("text").unwrap(); // Displays "Hello world!" on the screen
         })?;
 
         // Get user input
@@ -63,7 +63,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         // Handle the key input
         match key? {
             // If Ctrl + C is pressed, exit the loop and terminate the application
-            NyanInput::Ctrl(NyanInputKey::C) => {
+            NyanInput::Ctrl(NyanKey::C) => {
                 break; // Exit the loop and terminate the app
             }
 
