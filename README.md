@@ -47,7 +47,7 @@ fn main() -> Result<(), Box<dyn Error>> {
    
     // Add an object with the key "text" and assign it a text object
     // Here, we are creating an object to display the text "Hello world!"
-    obj.add_object("text", Objects::Text("Hello world!"));
+    obj.add_object("text", Objects::new_text("Hello world!"));
 
     // Start the main event loop
     loop {
