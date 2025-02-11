@@ -13,6 +13,8 @@
 use crossterm::execute;
 use std::fmt::Debug;
 
+use crate::errors;
+
 /// The `Cursor` enum represents cursor movement operations.
 ///
 /// Currently, it supports various cursor movements, such as moving the cursor to a specific `(x, y)` position,
@@ -59,6 +61,9 @@ impl Debug for Cursor {
 }
 
 impl Cursor {
+    pub fn new(x: u16, y: u16) -> Self {
+        Cursor::Move(x, y)
+    }
     /// Moves the cursor to the specified position.
     ///
     /// # Arguments
@@ -77,24 +82,51 @@ impl Cursor {
     pub fn move_cursor(moveto: Self) -> anyhow::Result<()> {
         match moveto {
             Cursor::Move(x, y) => {
-                execute!(std::io::stdout(), crossterm::cursor::MoveTo(x, y))?;
+                return if let Err(e) = execute!(std::io::stdout(), crossterm::cursor::MoveTo(x, y))
+                {
+                    Err(errors::NyanError::Cursor(e.to_string().into()).into())
+                } else {
+                    Ok(())
+                };
             }
             Cursor::MoveLeft(x) => {
-                execute!(std::io::stdout(), crossterm::cursor::MoveLeft(x))?;
+                return if let Err(e) = execute!(std::io::stdout(), crossterm::cursor::MoveLeft(x)) {
+                    Err(errors::NyanError::Cursor(e.to_string().into()).into())
+                } else {
+                    Ok(())
+                };
             }
             Cursor::MoveRight(x) => {
-                execute!(std::io::stdout(), crossterm::cursor::MoveRight(x))?;
+                return if let Err(e) = execute!(std::io::stdout(), crossterm::cursor::MoveRight(x))
+                {
+                    Err(errors::NyanError::Cursor(e.to_string().into()).into())
+                } else {
+                    Ok(())
+                };
             }
             Cursor::MoveUp(y) => {
-                execute!(std::io::stdout(), crossterm::cursor::MoveUp(y))?;
+                return if let Err(e) = execute!(std::io::stdout(), crossterm::cursor::MoveUp(y)) {
+                    Err(errors::NyanError::Cursor(e.to_string().into()).into())
+                } else {
+                    Ok(())
+                }
             }
             Cursor::MoveDown(y) => {
-                execute!(std::io::stdout(), crossterm::cursor::MoveDown(y))?;
+                return if let Err(e) = execute!(std::io::stdout(), crossterm::cursor::MoveDown(y)) {
+                    Err(errors::NyanError::Cursor(e.to_string().into()).into())
+                } else {
+                    Ok(())
+                };
             }
             Cursor::MoveToNextLine(next) => {
-                execute!(std::io::stdout(), crossterm::cursor::MoveToNextLine(next))?;
+                return if let Err(e) =
+                    execute!(std::io::stdout(), crossterm::cursor::MoveToNextLine(next))
+                {
+                    Err(errors::NyanError::Cursor(e.to_string().into()).into())
+                } else {
+                    Ok(())
+                };
             }
         }
-        Ok(())
     }
 }

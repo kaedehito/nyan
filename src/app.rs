@@ -22,6 +22,8 @@ use crossterm::{cursor, execute, terminal};
 
 use std::{fmt::Debug, io, thread, time::Duration};
 
+use crate::errors;
+
 /// `NyanTerminal` is a struct that handles terminal control and drawing.
 /// It supports functionalities like enabling alternate screens, clearing the terminal,
 /// enabling raw mode, and controlling the cursor visibility and FPS.
@@ -173,10 +175,14 @@ impl App {
     /// # Returns
     /// A `Result` indicating success or failure of the operation.
     pub fn draw<F: FnOnce()>(&mut self, func: F) -> Result<()> {
-        execute!(&self.stdout, cursor::MoveTo(0, 0))?;
+        if let Err(e) = execute!(&self.stdout, cursor::MoveTo(0, 0)) {
+            return Err(errors::NyanError::DrawFailed(e.to_string().into()).into());
+        }
 
         if self.alternatescreen && !self.looped {
-            execute!(&self.stdout, terminal::EnterAlternateScreen)?;
+            if let Err(e) = execute!(&self.stdout, terminal::EnterAlternateScreen) {
+                return Err(errors::NyanError::DrawFailed(e.to_string().into()).into());
+            }
         }
 
         if self.rawmode && !self.looped {

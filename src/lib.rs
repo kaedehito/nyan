@@ -35,7 +35,7 @@
 //!    let mut obj = NyanObj::new();
 //!    
 //!    // Create and add objects to the application
-//!    obj.add_object("text", Objects::Text("Hello world!"));
+//!    obj.add_object("text", Objects::new_text("Hello world!"));
 //!    
 //!    // Run the main event loop
 //!    loop {
@@ -66,6 +66,7 @@
 
 pub mod app;
 pub mod cursor;
+pub mod errors;
 pub mod input;
 pub mod nyanobj;
 pub mod objects;
@@ -74,7 +75,7 @@ pub mod objects;
 mod tests {
     use crate::{
         app::App,
-        cursor::{self, Cursor},
+        cursor::Cursor,
         input::{NyanInput, NyanInputKey},
         nyanobj::NyanObj,
         objects::Objects,
@@ -90,36 +91,36 @@ mod tests {
 
         let mut obj = NyanObj::new();
 
-        obj.add_object("hello_world", Objects::Text("Hello world!"));
+        obj.add_object("hello_world", Objects::new_text("Hello world!"));
         let dbged = format!("{:?}", &nyan);
-        obj.add_object("Test_NyanTerm_dbg", Objects::Text(&dbged));
+
+        obj.add_object("Test_NyanTerm_dbg", Objects::new_text(&dbged));
         obj.add_object("input_key", Objects::Air);
         obj.add_object("surash", Objects::Air);
-        obj.update_object("Character", Objects::Text("□"));
+        obj.add_object("frame", Objects::Air);
+        obj.add_object("Character", Objects::new_text("□"));
 
-        let mut obj_frame: NyanObj<&str, String> = NyanObj::new();
-
-        obj_frame.add_object("frame", Objects::Air);
         let mut frame = 0u64;
 
         loop {
             frame += 1;
-            obj_frame.update_object("frame", Objects::Text(frame.to_string()));
+            obj.update_object("frame", Objects::new_text(frame.to_string()));
 
             let (_, height) = App::get_terminal_size().unwrap();
 
             nyan.draw(|| {
                 obj.draw_object("hello_world").unwrap();
-                cursor::Cursor::move_cursor(Cursor::Move(0, 1)).unwrap();
-                obj.draw_object("Test_NyanTerm_dbg").unwrap();
-                cursor::Cursor::move_cursor(Cursor::Move(0, 2)).unwrap();
-                obj.draw_object("surash").unwrap();
 
-                cursor::Cursor::move_cursor(Cursor::Move(0, 3)).unwrap();
-                obj.draw_object("Character").unwrap();
+                obj.draw_with_move("Test_NyanTerm_dbg", Cursor::MoveToNextLine(1))
+                    .unwrap();
 
-                cursor::Cursor::move_cursor(Cursor::Move(0, height)).unwrap();
-                obj_frame.draw_object("frame").unwrap();
+                obj.draw_with_move("surash", Cursor::MoveToNextLine(1))
+                    .unwrap();
+
+                obj.draw_with_move("Character", Cursor::MoveToNextLine(1))
+                    .unwrap();
+
+                obj.draw_with_move("frame", Cursor::new(0, height)).unwrap();
             })
             .unwrap();
 
@@ -134,15 +135,15 @@ mod tests {
                 }
 
                 NyanInput::Key(NyanInputKey::OtherKey('/')) => {
-                    obj.update_object("surash", Objects::Text("inputed"));
+                    obj.update_object("surash", Objects::new_text("inputed"));
                 }
 
                 NyanInput::Key(NyanInputKey::A) => {
-                    obj.update_object("hello_world", Objects::Text("You Plessed \"A\"!"));
+                    obj.update_object("hello_world", Objects::new_text("You Plessed \"A\"!"));
                 }
 
                 NyanInput::UpAllow => {
-                    obj.update_object("Character", Objects::Text("□ < なに？"));
+                    obj.update_object("Character", Objects::new_text("□ < なに？"));
                 }
 
                 _ => {}

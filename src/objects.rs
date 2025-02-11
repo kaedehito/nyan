@@ -13,12 +13,13 @@
 //!
 //! - `Debug`: Provides a custom debug implementation for the `Objects` enum. It formats the enum variants in a human-readable way, displaying the respective type and data (if applicable).
 
+use std::borrow::Cow;
 use std::fmt::Debug;
 
 #[derive(PartialEq, Eq, Hash)]
 /// The `Objects` enum represents different types of objects.
 /// It can be a `Block`, `Air`, or a `Text` object containing a `AsRef<str>`.
-pub enum Objects<T: AsRef<str> = String> {
+pub enum Objects<'a> {
     /// Represents a block object.
     Block,
 
@@ -26,10 +27,10 @@ pub enum Objects<T: AsRef<str> = String> {
     Air,
 
     /// Represents a text object that contains a string.
-    Text(T),
+    Text(Cow<'a, str>),
 }
 
-impl<T: AsRef<str>> Debug for Objects<T> {
+impl<'a> Debug for Objects<'a> {
     /// Provides a custom debug implementation for `Objects`, printing a string representation of each variant.
     fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
@@ -48,5 +49,11 @@ impl<T: AsRef<str>> Debug for Objects<T> {
                 write!(fmt, "Objects::Text({})", t.as_ref())
             }
         }
+    }
+}
+
+impl<'a> Objects<'a> {
+    pub fn new_text<T: Into<Cow<'a, str>>>(text: T) -> Self {
+        Self::Text(text.into())
     }
 }
